@@ -145,7 +145,7 @@ fn main() {
     framebuffer.clear();
 
     // 2. move the player on user input
-    process_events(&mut player, &window);
+    process_events(&mut player, &window, &maze, block_size);
 
     let mut mode = "3D";
 
