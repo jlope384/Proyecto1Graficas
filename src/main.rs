@@ -119,6 +119,42 @@ fn render_world(
   }
 }
 
+fn render_minimap(
+    framebuffer: &mut Framebuffer,
+    maze: &Maze,
+    block_size: usize,
+    player: &Player,
+    scale: f32, // 0.2 = 20% del tamaño
+    offset_x: usize,
+    offset_y: usize,
+) {
+    let mini_block = (block_size as f32 * scale) as usize;
+
+    // Dibujar el mapa reducido
+    for (row_index, row) in maze.iter().enumerate() {
+        for (col_index, &cell) in row.iter().enumerate() {
+            if cell != ' ' {
+                let xo = offset_x + col_index * mini_block;
+                let yo = offset_y + row_index * mini_block;
+
+                framebuffer.set_current_color(Color::DARKGRAY);
+                for x in xo..xo + mini_block {
+                    for y in yo..yo + mini_block {
+                        framebuffer.set_pixel(x as u32, y as u32);
+                    }
+                }
+            }
+        }
+    }
+
+    // Dibujar al jugador
+    framebuffer.set_current_color(Color::RED);
+    let px = offset_x + (player.pos.x as usize / block_size) * mini_block;
+    let py = offset_y + (player.pos.y as usize / block_size) * mini_block;
+    framebuffer.set_pixel(px as u32, py as u32);
+}
+
+
 fn main() {
   let window_width = 1300;
   let window_height = 900;
@@ -158,6 +194,7 @@ fn main() {
       render_maze(&mut framebuffer, &maze, block_size, &player);
     } else {
       render_world(&mut framebuffer, &maze, block_size, &player);
+      render_minimap(&mut framebuffer, &maze, block_size, &player, 0.2, 1000, 20);
     }
 
     // 4. swap buffers

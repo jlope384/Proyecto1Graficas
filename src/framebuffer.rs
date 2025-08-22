@@ -44,14 +44,28 @@ impl Framebuffer {
         self.color_buffer.export_image(file_path);
     }
 
-    pub fn swap_buffers(
-        &self,
-        window: &mut RaylibHandle,
-        raylib_thread: &RaylibThread,
-    ) {
-        if let Ok(texture) = window.load_texture_from_image(raylib_thread, &self.color_buffer) {
-            let mut renderer = window.begin_drawing(raylib_thread);
-            renderer.draw_texture(&texture, 0, 0, Color::WHITE);
-        }
+pub fn swap_buffers(
+    &self,
+    window: &mut RaylibHandle,
+    raylib_thread: &RaylibThread,
+) {
+    if let Ok(texture) = window.load_texture_from_image(raylib_thread, &self.color_buffer) {
+        // 👇 pedimos FPS aquí
+        let fps = window.get_fps();
+
+        let mut renderer = window.begin_drawing(raylib_thread);
+
+        // Dibujar framebuffer
+        renderer.draw_texture(&texture, 0, 0, Color::WHITE);
+
+        // Dibujar FPS
+        renderer.draw_text(
+            &format!("FPS: {}", fps),
+            10,
+            10,
+            20,
+            Color::YELLOW,
+        );
     }
+}
 }
